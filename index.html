@@ -299,13 +299,22 @@ const data = [
     rule: "Use Citi until the remaining ~S$500 monthly capacity is exhausted, then switch to HSBC Revolution."
   },
   {
-    cat: "Food delivery & app-booked taxis",
+    cat: "Foodpanda, GrabFood & Deliveroo (food delivery)",
     primary: "Citi Rewards (if cap remains)",
-    backup: "HSBC Revolution",
-    ret: "up to 4 mpd",
+    backup: "Citi SMRT online, then Mari Credit Card",
+    ret: "4 mpd",
     type: "miles",
-    tags: ["grab", "foodpanda", "deliveroo", "taxi", "food delivery"],
-    rule: "Prioritise Citi for online-posted transactions. Move overflow to HSBC once Citi's cap is eligible."
+    tags: ["grab", "grabfood", "foodpanda", "deliveroo", "food delivery"],
+    rule: "Don't route food delivery to HSBC Revolution — it's a gamble. HSBC needs the transaction coded as MCC 5812 (restaurant, whitelisted) but delivery apps often code as MCC 5814 (fast food, not on HSBC's whitelist), so the 4 mpd bonus can silently fail. Pay directly inside the Foodpanda/Grab app on Citi Rewards — not via Apple Pay, Google Pay or Amaze. GrabPay wallet top-ups are excluded entirely (stored-value MCC)."
+  },
+  {
+    cat: "Grab & Gojek taxi / car rides",
+    primary: "HSBC Revolution",
+    backup: "Mari Credit Card",
+    ret: "4 mpd",
+    type: "miles",
+    tags: ["grab", "gojek", "taxi", "ride", "car ride"],
+    rule: "Ride bookings code as MCC 4121, which is on HSBC's whitelist — reliably eligible for 4 mpd, unlike food delivery from the same apps."
   },
   {
     cat: "Spotify, iCloud, Google One (~S$37.50)",
@@ -471,7 +480,7 @@ const chipFilters = [
 const chipMap = {
   groceries: ["fairprice", "groceries", "supermarket"],
   ecommerce: ["shopee", "lazada", "online shopping", "ecommerce"],
-  dining: ["restaurant", "dining", "food", "grab", "foodpanda", "deliveroo", "food delivery", "taxi"],
+  dining: ["restaurant", "dining", "food", "grab", "grabfood", "foodpanda", "deliveroo", "food delivery", "taxi", "gojek", "ride", "car ride"],
   transit: ["bus", "mrt", "transit", "public transport"],
   bills: ["utilities", "phone", "broadband", "bills", "subscriptions", "chatgpt", "claude", "openai", "anthropic", "ai subscription"],
   movies: ["movie", "movies", "cinema", "tickets", "shaw", "gv", "golden village"],
