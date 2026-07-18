@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Which Card? — Quick Lookup</title>
+<style>
+  :root {
+    --ink: #0f1b2d;
+    --ink-soft: #3a4a63;
+    --paper: #eef1f6;
+    --card-bg: #ffffff;
+    --accent: #1f6f5c;
+    --accent-soft: #d9ece6;
+    --gold: #b8862b;
+    --gold-soft: #f3e8d2;
+    --line: #d7dde6;
+    --radius: 14px;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 28px 18px 60px;
+  }
+
+  header {
+    margin-bottom: 20px;
+  }
+
+  .eyebrow {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  h1 {
+    font-size: 28px;
+    margin: 0 0 4px;
+    letter-spacing: -0.01em;
+  }
+
+  .sub {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: var(--ink-soft);
+    font-size: 14px;
+    margin: 0;
+  }
+
+  .search-box {
+    position: relative;
+    margin: 20px 0 14px;
+  }
+
+  #search {
+    width: 100%;
+    padding: 14px 16px;
+    font-size: 16px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    border: 1.5px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--card-bg);
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.15s ease;
+  }
+
+  #search:focus {
+    border-color: var(--accent);
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 22px;
+  }
+
+  .chip {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 12px;
+    padding: 6px 11px;
+    border-radius: 100px;
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .chip.active {
+    background: var(--ink);
+    color: white;
+    border-color: var(--ink);
+  }
+
+  .count {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-bottom: 10px;
+  }
+
+  .results {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: var(--accent);
+  }
+
+  .card.miles::before { background: var(--accent); }
+  .card.cashback::before { background: var(--gold); }
+
+  .category {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 10px;
+    line-height: 1.3;
+  }
+
+  .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 13px;
+    padding: 5px 0;
+    border-top: 1px dashed var(--line);
+  }
+
+  .row:first-of-type { border-top: none; padding-top: 0; }
+
+  .row .label {
+    color: var(--ink-soft);
+    flex-shrink: 0;
+    margin-right: 14px;
+  }
+
+  .row .value {
+    text-align: right;
+    font-weight: 600;
+  }
+
+  .primary-badge {
+    display: inline-block;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 6px;
+  }
+
+  .return-badge {
+    display: inline-block;
+    background: var(--gold-soft);
+    color: var(--gold);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 6px;
+  }
+
+  .rule {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--line);
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--ink-soft);
+  }
+
+  .tiers {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+
+  .tier {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 13px;
+  }
+
+  .tier-num {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1px;
+  }
+
+  .tier-body { flex: 1; }
+
+  .tier-cond {
+    color: var(--ink-soft);
+    margin-bottom: 2px;
+  }
+
+  .tier-answer {
+    font-weight: 600;
+  }
+
+  .tier-answer .ret {
+    font-weight: 400;
+    color: var(--ink-soft);
+  }
+
+  .empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--ink-soft);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 14px;
+  }
+
+  @media (max-width: 420px) {
+    h1 { font-size: 24px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Siva's Wallet · Quick Lookup</div>
+    <h1>Which card do I use?</h1>
+    <p class="sub">Search a merchant or spend type, or tap a filter below.</p>
+  </header>
+
+  <div class="search-box">
+    <input type="text" id="search" placeholder="e.g. Shopee, taxi, hotel, utilities…" autocomplete="off">
+  </div>
+
+  <div class="chips" id="chips"></div>
+  <div class="count" id="count"></div>
+  <div class="results" id="results"></div>
+</div>
+
+<script>
+const data = [
+  {
+    cat: "FairPrice in-store (via app QR)",
+    primary: "Citi Rewards",
+    backup: "Mari Credit Card",
+    ret: "4 mpd",
+    type: "miles",
+    tags: ["fairprice", "groceries", "supermarket"],
+    rule: "Pay through the FairPrice app with Citi Rewards saved directly. Consumes ~S$500 of Citi's S$1,000 monthly cap. Confirm 10X points post correctly — relies on transaction coding."
+  },
+  {
+    cat: "Shopee, Lazada & online shopping",
+    primary: "Citi Rewards",
+    backup: "HSBC Revolution",
+    ret: "4 mpd",
+    type: "miles",
+    tags: ["shopee", "lazada", "online shopping", "ecommerce"],
+    rule: "Use Citi until the remaining ~S$500 monthly capacity is exhausted, then switch to HSBC Revolution."
+  },
+  {
+    cat: "Food delivery & app-booked taxis",
+    primary: "Citi Rewards (if cap remains)",
+    backup: "HSBC Revolution",
+    ret: "up to 4 mpd",
+    type: "miles",
+    tags: ["grab", "foodpanda", "deliveroo", "taxi", "food delivery"],
+    rule: "Prioritise Citi for online-posted transactions. Move overflow to HSBC once Citi's cap is eligible."
+  },
+  {
+    cat: "Spotify, iCloud, Google One (~S$37.50)",
+    primary: "Citi Rewards (if cap remains)",
+    backup: "Amex True Cashback",
+    ret: "4 mpd or 1.5%",
+    type: "miles",
+    tags: ["spotify", "icloud", "google one", "subscriptions"],
+    rule: "Lower priority than larger online purchases. Leave on Amex once Citi's S$1,000 cap is already full."
+  },
+  {
+    cat: "In-person restaurants",
+    primary: "HSBC Revolution (contactless / mobile wallet)",
+    backup: "Mari Credit Card",
+    ret: "up to 4 mpd",
+    type: "miles",
+    tags: ["restaurant", "dining", "food"],
+    rule: "HSBC's 9,000 bonus-point cap is effectively S$1,000/month for ordinary cardholders. Merchant category coding still matters."
+  },
+  {
+    cat: "Random in-store Google Pay / contactless",
+    primary: "HSBC Revolution",
+    backup: "Mari Credit Card",
+    ret: "up to 4 mpd",
+    type: "miles",
+    tags: ["google pay", "contactless", "in-store", "wallet"],
+    rule: "Don't put mobile-wallet purchases on Citi Rewards expecting the online-spend bonus."
+  },
+  {
+    cat: "Bus & MRT (~S$55/mo)",
+    primary: "Trust Credit Card",
+    backup: "Any convenient card",
+    ret: "~0.22% Linkpoints",
+    type: "cashback",
+    tags: ["bus", "mrt", "transit", "public transport"],
+    rule: "Keep Trust as the transit card — reward is tiny, so convenience beats optimisation. Not worth switching to Mari for this alone."
+  },
+  {
+    cat: "Utilities, phone & broadband",
+    primary: "Amex True Cashback",
+    backup: "—",
+    ret: "1.5% cashback",
+    type: "cashback",
+    tags: ["utilities", "phone", "broadband", "bills", "singtel", "starhub"],
+    rule: "Keep on Amex to avoid consuming valuable 4-mpd caps. Amex occasionally runs registered bonus-cashback promos for bills."
+  },
+  {
+    cat: "Other local spend after bonus caps",
+    primary: "Mari Credit Card",
+    backup: "Amex True Cashback",
+    ret: "1.5% cashback",
+    type: "cashback",
+    tags: ["fallback", "general", "leftover", "other"],
+    rule: "Mari is the cleaner Mastercard fallback wherever Amex isn't accepted. Advertises 1.5% on eligible SGD spend."
+  },
+  {
+    cat: "Direct airline bookings",
+    primary: "HSBC Revolution — first S$1,000/mo",
+    backup: "Citi PremierMiles",
+    ret: "4 mpd, then 1.2 mpd",
+    type: "miles",
+    tags: ["airline", "flight", "flights", "airfare"],
+    rule: "Book directly with the airline. Spread flights, hotels & rental cars across different calendar months to reuse HSBC's cap."
+  },
+  {
+    cat: "Direct hotel & rental-car bookings",
+    primary: "HSBC Revolution — first S$1,000",
+    backup: "Citi PremierMiles (SGD)",
+    ret: "4 mpd, then 1.2 mpd",
+    type: "miles",
+    tags: ["hotel", "rental car", "car rental", "accommodation"],
+    rule: "Don't assume every OTA transaction qualifies for HSBC's travel bonus — direct bookings are safer."
+  },
+  {
+    cat: "AirAsia India flights",
+    primary: "HSBC Revolution first",
+    backup: "PremierMiles (SGD) / Mari (FCY)",
+    ret: "4 mpd / 1.2 mpd / 1.5%",
+    type: "miles",
+    tags: ["airasia", "india flight"],
+    rule: "Book directly with AirAsia and use whichever monthly cap still has room."
+  },
+  {
+    cat: "Overseas FCY — first S$1,500/mo",
+    primary: "Mari Credit Card",
+    backup: "Trust / YouTrip",
+    ret: "1.5% cashback, no FX fee",
+    type: "cashback",
+    tags: ["overseas", "foreign currency", "fcy", "travel spend", "abroad"],
+    rule: "Always choose the merchant's local currency, not SGD. 1.5% overseas promo is capped at S$1,500/month, runs through 31 Dec 2026."
+  },
+  {
+    cat: "Overseas FCY above S$1,500",
+    primary: "YouTrip or Trust",
+    backup: "Revolut",
+    ret: "FX savings",
+    type: "cashback",
+    tags: ["overseas", "foreign currency", "fcy", "large overseas spend"],
+    rule: "Use PremierMiles only when deliberately choosing miles over minimising fees."
+  },
+  {
+    cat: "FCY miles-first alternative",
+    primary: "Citi PremierMiles",
+    backup: "—",
+    ret: "2.2 mpd",
+    type: "miles",
+    tags: ["fcy", "foreign currency", "miles"],
+    rule: "Earns 2.2 mpd on FCY spend, but the bank's FX cost means those extra miles aren't free."
+  },
+  {
+    cat: "Citi Rewards + Amaze",
+    primary: "Generally don't use",
+    backup: "Tactical overseas non-travel only",
+    ret: "potential 4 mpd",
+    type: "cashback",
+    tags: ["amaze", "citi rewards"],
+    rule: "Citi's cap is normally consumed by FairPrice + online purchases already. Amaze charges 1% on domestic linked-card spend and up to 2.1% FX spread overseas."
+  },
+  {
+    cat: "Movie tickets",
+    primary: "Citi Rewards",
+    backup: "Citi SMRT online",
+    ret: "4 mpd",
+    type: "miles",
+    tags: ["movie", "movies", "cinema", "tickets", "shaw", "gv", "golden village"],
+    tiers: [
+      { cond: "Shaw / GV website or app, card entered directly", card: "Citi Rewards", ret: "4 mpd" },
+      { cond: "Citi Rewards S$1,000 cap already full", card: "Citi SMRT online", ret: "5% cashback (S$500 statement spend + annual cap apply)" },
+      { cond: "Both Citi caps unavailable", card: "Citi PremierMiles", ret: "1.2 mpd" },
+      { cond: "Buying physically at cinema counter / kiosk", card: "PremierMiles or MariBank", ret: "1.2 mpd or 1.5% cashback" }
+    ],
+    rule: "Book online directly through Shaw/GV for the best rate. Counter or kiosk purchases don't qualify for Citi's online bonus, so fall to PremierMiles or Mari there."
+  },
+  {
+    cat: "ChatGPT & Claude subscriptions",
+    primary: "Citi Rewards",
+    backup: "HSBC Revolution",
+    ret: "4 mpd",
+    type: "miles",
+    tags: ["chatgpt", "claude", "openai", "anthropic", "ai subscription", "subscriptions", "subscription"],
+    tiers: [
+      { cond: "Citi Rewards cap available", card: "Citi Rewards", ret: "4 mpd — best choice" },
+      { cond: "Citi cap already full", card: "HSBC Revolution", ret: "potentially 4 Avios/S$ via BA — test one cycle to confirm 10X" },
+      { cond: "Both bonus caps full", card: "Amex True Cashback or Mari", ret: "1.5% cashback — simple fallback" },
+      { cond: "Billed in foreign currency", card: "Citi Rewards (miles) or Mari (savings)", ret: "4 mpd vs. no-FX cashback — depends on priority" }
+    ],
+    rule: "Pay directly on ChatGPT's and Claude's own web billing — never route through Amaze, and avoid the Apple App Store unless meaningfully cheaper, since the MCC will then read as Apple rather than OpenAI/Anthropic. At S$100–150/month this is predictable spend: it fits inside Citi's S$1,000 cap alongside ~S$500 FairPrice, leaving ~S$350–400 for Shopee/Lazada/delivery/taxis. Final order: Citi Rewards → HSBC Revolution (if Citi full) → Amex/Mari (once both 4-mpd caps are exhausted)."
+  }
+];
+
+const chipFilters = [
+  { label: "All", key: "all" },
+  { label: "Groceries", key: "groceries" },
+  { label: "Online shopping", key: "ecommerce" },
+  { label: "Dining & delivery", key: "dining" },
+  { label: "Transit", key: "transit" },
+  { label: "Bills", key: "bills" },
+  { label: "Movies", key: "movies" },
+  { label: "Travel", key: "travel" },
+  { label: "Overseas / FCY", key: "fcy" }
+];
+
+const chipMap = {
+  groceries: ["fairprice", "groceries", "supermarket"],
+  ecommerce: ["shopee", "lazada", "online shopping", "ecommerce"],
+  dining: ["restaurant", "dining", "food", "grab", "foodpanda", "deliveroo", "food delivery", "taxi"],
+  transit: ["bus", "mrt", "transit", "public transport"],
+  bills: ["utilities", "phone", "broadband", "bills", "subscriptions", "chatgpt", "claude", "openai", "anthropic", "ai subscription"],
+  movies: ["movie", "movies", "cinema", "tickets", "shaw", "gv", "golden village"],
+  travel: ["airline", "flight", "flights", "hotel", "rental car", "airasia"],
+  fcy: ["overseas", "foreign currency", "fcy"]
+};
+
+let activeChip = "all";
+let searchTerm = "";
+
+const chipsEl = document.getElementById("chips");
+const resultsEl = document.getElementById("results");
+const countEl = document.getElementById("count");
+const searchEl = document.getElementById("search");
+
+function renderChips() {
+  chipsEl.innerHTML = "";
+  chipFilters.forEach(c => {
+    const el = document.createElement("div");
+    el.className = "chip" + (activeChip === c.key ? " active" : "");
+    el.textContent = c.label;
+    el.onclick = () => { activeChip = c.key; render(); };
+    chipsEl.appendChild(el);
+  });
+}
+
+function matches(item) {
+  const term = searchTerm.trim().toLowerCase();
+  const chipTags = activeChip === "all" ? null : chipMap[activeChip];
+
+  if (chipTags && !chipTags.some(t => item.tags.includes(t))) return false;
+
+  if (term) {
+    const haystack = (item.cat + " " + item.tags.join(" ") + " " + item.primary + " " + item.rule).toLowerCase();
+    if (!haystack.includes(term)) return false;
+  }
+  return true;
+}
+
+function render() {
+  renderChips();
+  const filtered = data.filter(matches);
+  countEl.textContent = filtered.length + (filtered.length === 1 ? " match" : " matches");
+
+  if (filtered.length === 0) {
+    resultsEl.innerHTML = '<div class="empty">No match. Try a different word — or check "Other local spend" as the fallback.</div>';
+    return;
+  }
+
+  resultsEl.innerHTML = filtered.map(item => `
+    <div class="card ${item.type}">
+      <p class="category">${item.cat}</p>
+      ${item.tiers ? `
+        <div class="tiers">
+          ${item.tiers.map((t, i) => `
+            <div class="tier">
+              <div class="tier-num">${i + 1}</div>
+              <div class="tier-body">
+                <div class="tier-cond">${t.cond}</div>
+                <div class="tier-answer">${t.card} <span class="ret">— ${t.ret}</span></div>
+              </div>
+            </div>
+          `).join("")}
+        </div>
+      ` : `
+        <div class="row">
+          <span class="label">Primary</span>
+          <span class="value"><span class="primary-badge">${item.primary}</span></span>
+        </div>
+        <div class="row">
+          <span class="label">Backup</span>
+          <span class="value">${item.backup}</span>
+        </div>
+        <div class="row">
+          <span class="label">Return</span>
+          <span class="value"><span class="return-badge">${item.ret}</span></span>
+        </div>
+      `}
+      <div class="rule">${item.rule}</div>
+    </div>
+  `).join("");
+}
+
+searchEl.addEventListener("input", (e) => {
+  searchTerm = e.target.value;
+  render();
+});
+
+render();
+</script>
+</body>
+</html>
