@@ -462,6 +462,51 @@ const data = [
       { cond: "Billed in foreign currency", card: "Citi Rewards (miles) or Mari (savings)", ret: "4 mpd vs. no-FX cashback — depends on priority" }
     ],
     rule: "Pay directly on ChatGPT's and Claude's own web billing — never route through Amaze, and avoid the Apple App Store unless meaningfully cheaper, since the MCC will then read as Apple rather than OpenAI/Anthropic. At S$100–150/month this is predictable spend: it fits inside Citi's S$1,000 cap alongside ~S$500 FairPrice, leaving ~S$350–400 for Shopee/Lazada/delivery/taxis. Final order: Citi Rewards → HSBC Revolution (if Citi full) → Amex/Mari (once both 4-mpd caps are exhausted)."
+  },
+  {
+    cat: "%Arabica (tap / Google Pay in-store)",
+    primary: "HSBC Revolution",
+    backup: "Mari Credit Card",
+    ret: "up to 4 mpd",
+    type: "miles",
+    tags: ["arabica", "%arabica", "coffee", "heymax", "voucher"],
+    rule: "Best route: buy %Arabica vouchers on HeyMax with HSBC Revolution, then redeem in-store — this reliably earns the HSBC bonus AND stacks HeyMax Max Miles, sidestepping the coffee-shop MCC risk (see the HeyMax vouchers entry). Paying in-store directly: tap or Google Pay with HSBC Revolution, but bonus points only apply if the outlet codes as MCC 5812 (eating places) — cafés sometimes code as MCC 5814 (fast food), which is NOT on HSBC's whitelist, so the 4 mpd can silently fail. Check one statement to confirm the 10X posts; if it reads as 5814, treat it as a plain 1x spend and put it on Mari instead."
+  },
+  {
+    cat: "Starbucks (counter, Mobile Order & Pay, Card reload)",
+    primary: "HSBC Revolution",
+    backup: "Citi Rewards",
+    ret: "4 mpd",
+    type: "miles",
+    tags: ["starbucks", "coffee", "stars", "starbucks card", "starbucks rewards"],
+    tiers: [
+      { cond: "Counter order", card: "Scan Starbucks app QR for Stars, then pay with HSBC Revolution / Google Pay", ret: "up to 4 mpd + 1 Star/S$2" },
+      { cond: "Mobile Order & Pay", card: "Add HSBC Revolution or Citi Rewards as the payment card, pay directly", ret: "up to 4 mpd" },
+      { cond: "Starbucks Card reload / auto-reload", card: "Avoid for miles — risky", ret: "1 Star/S$1, but top-up is often excluded as stored-value spend" }
+    ],
+    rule: "MCC caveat: Starbucks frequently codes as MCC 5814 (fast food), which is NOT on HSBC's dining whitelist — so the 4 mpd can silently fail. Only MCC 5811/5812/5813 qualify. Confirm the 10X posts on one cycle before assuming the bonus; if it reads as 5814, it's just a 1x spend. Separately, don't top up the Starbucks Card for miles — HSBC and Citi both exclude prepaid/stored-value top-ups from bonus earn. Scan the app's \"Other Payment\" QR to still collect Stars, then pay directly with HSBC Revolution (or Citi Rewards if its cap has room). Trade-off: direct card payment earns fewer Stars (1/S$2) than a registered Starbucks Card (1/S$1) — worth it once you're prioritising miles over Stars."
+  },
+  {
+    cat: "Luckin Coffee (app order or counter/kiosk)",
+    primary: "Citi Rewards (if cap remains)",
+    backup: "HSBC Revolution",
+    ret: "4 mpd",
+    type: "miles",
+    tags: ["luckin", "luckin coffee", "coffee"],
+    tiers: [
+      { cond: "Luckin app order", card: "Citi Rewards (if cap remains), else HSBC Revolution", ret: "4 mpd" },
+      { cond: "Counter / kiosk contactless", card: "HSBC Revolution — tap / Google Pay", ret: "up to 4 mpd" }
+    ],
+    rule: "Luckin is app-first — orders are placed and checked out inside the app. Prefer Citi Rewards (online-spend bonus) while its S$1,000 monthly cap has room. On HSBC Revolution the bonus depends on the MCC — coffee outlets can code as MCC 5814 (fast food), which is NOT on HSBC's dining whitelist, so treat HSBC 4 mpd here as unconfirmed until you've checked a statement. If Luckin vouchers are available on HeyMax, buying them there sidesteps the MCC risk and stacks Max Miles (see the HeyMax vouchers entry)."
+  },
+  {
+    cat: "HeyMax vouchers (coffee & retail gift cards)",
+    primary: "HSBC Revolution",
+    backup: "Citi Rewards",
+    ret: "up to 4 mpd + Max Miles",
+    type: "miles",
+    tags: ["heymax", "voucher", "vouchers", "gift card", "arabica", "%arabica", "starbucks", "luckin", "coffee"],
+    rule: "Buying brand vouchers on HeyMax (e.g. %Arabica, Starbucks) with HSBC Revolution earns the card's bonus points AND HeyMax's own Max Miles, then you redeem the voucher in-store. This is the reliable way to earn on coffee: it converts an MCC-risky in-store tap (which may code as 5814 fast food and miss the bonus) into a bonus-eligible online purchase. Pay directly on HeyMax with the card — don't route through Amaze. Confirm the HSBC 10X still posts on your first purchase, and only buy vouchers you'll actually use."
   }
 ];
 
@@ -470,6 +515,7 @@ const chipFilters = [
   { label: "Groceries", key: "groceries" },
   { label: "Online shopping", key: "ecommerce" },
   { label: "Dining & delivery", key: "dining" },
+  { label: "Coffee", key: "coffee" },
   { label: "Transit", key: "transit" },
   { label: "Bills", key: "bills" },
   { label: "Movies", key: "movies" },
@@ -481,6 +527,7 @@ const chipMap = {
   groceries: ["fairprice", "groceries", "supermarket"],
   ecommerce: ["shopee", "lazada", "online shopping", "ecommerce"],
   dining: ["restaurant", "dining", "food", "grab", "grabfood", "foodpanda", "deliveroo", "food delivery", "taxi", "gojek", "ride", "car ride"],
+  coffee: ["arabica", "%arabica", "starbucks", "stars", "starbucks card", "starbucks rewards", "luckin", "luckin coffee", "coffee", "heymax", "voucher"],
   transit: ["bus", "mrt", "transit", "public transport"],
   bills: ["utilities", "phone", "broadband", "bills", "subscriptions", "chatgpt", "claude", "openai", "anthropic", "ai subscription"],
   movies: ["movie", "movies", "cinema", "tickets", "shaw", "gv", "golden village"],
