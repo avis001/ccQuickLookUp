@@ -308,6 +308,15 @@ const data = [
     rule: "Don't route food delivery to HSBC Revolution — it's a gamble. HSBC needs the transaction coded as MCC 5812 (restaurant, whitelisted) but delivery apps often code as MCC 5814 (fast food, not on HSBC's whitelist), so the 4 mpd bonus can silently fail. Pay directly inside the Foodpanda/Grab app on Citi Rewards — not via Apple Pay, Google Pay or Amaze. GrabPay wallet top-ups are excluded entirely (stored-value MCC)."
   },
   {
+    cat: "Oddle Eats (food delivery)",
+    primary: "HSBC Revolution",
+    backup: "Citi Rewards (if cap remains)",
+    ret: "4 mpd",
+    type: "miles",
+    tags: ["oddle", "oddle eats", "food delivery"],
+    rule: "Unlike Foodpanda/GrabFood/Deliveroo, Oddle Eats codes as MCC 5812 (Eating Places & Restaurants), which is on HSBC's dining whitelist — so HSBC Revolution reliably earns the 4 mpd bonus here. Pay directly on HSBC Revolution rather than defaulting to Citi."
+  },
+  {
     cat: "Grab & Gojek taxi / car rides",
     primary: "HSBC Revolution",
     backup: "Mari Credit Card",
@@ -526,7 +535,7 @@ const chipFilters = [
 const chipMap = {
   groceries: ["fairprice", "groceries", "supermarket"],
   ecommerce: ["shopee", "lazada", "online shopping", "ecommerce"],
-  dining: ["restaurant", "dining", "food", "grab", "grabfood", "foodpanda", "deliveroo", "food delivery", "taxi", "gojek", "ride", "car ride"],
+  dining: ["restaurant", "dining", "food", "grab", "grabfood", "foodpanda", "deliveroo", "oddle", "oddle eats", "food delivery", "taxi", "gojek", "ride", "car ride"],
   coffee: ["arabica", "%arabica", "starbucks", "stars", "starbucks card", "starbucks rewards", "luckin", "luckin coffee", "coffee", "heymax", "voucher"],
   transit: ["bus", "mrt", "transit", "public transport"],
   bills: ["utilities", "phone", "broadband", "bills", "subscriptions", "chatgpt", "claude", "openai", "anthropic", "ai subscription"],
