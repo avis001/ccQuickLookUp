@@ -458,19 +458,28 @@ const data = [
     rule: "Book online directly through Shaw/GV for the best rate. Counter or kiosk purchases don't qualify for Citi's online bonus, so fall to PremierMiles or Mari there."
   },
   {
-    cat: "ChatGPT & Claude subscriptions",
+    cat: "ChatGPT (OpenAI) subscription",
     primary: "Citi Rewards",
     backup: "HSBC Revolution",
     ret: "4 mpd",
     type: "miles",
-    tags: ["chatgpt", "claude", "openai", "anthropic", "ai subscription", "subscriptions", "subscription"],
+    tags: ["chatgpt", "openai", "ai subscription", "subscriptions", "subscription"],
     tiers: [
       { cond: "Citi Rewards cap available", card: "Citi Rewards", ret: "4 mpd — best choice" },
       { cond: "Citi cap already full", card: "HSBC Revolution", ret: "potentially 4 Avios/S$ via BA — test one cycle to confirm 10X" },
       { cond: "Both bonus caps full", card: "Amex True Cashback or Mari", ret: "1.5% cashback — simple fallback" },
       { cond: "Billed in foreign currency", card: "Citi Rewards (miles) or Mari (savings)", ret: "4 mpd vs. no-FX cashback — depends on priority" }
     ],
-    rule: "Pay directly on ChatGPT's and Claude's own web billing — never route through Amaze, and avoid the Apple App Store unless meaningfully cheaper, since the MCC will then read as Apple rather than OpenAI/Anthropic. At S$100–150/month this is predictable spend: it fits inside Citi's S$1,000 cap alongside ~S$500 FairPrice, leaving ~S$350–400 for Shopee/Lazada/delivery/taxis. Final order: Citi Rewards → HSBC Revolution (if Citi full) → Amex/Mari (once both 4-mpd caps are exhausted)."
+    rule: "Pay directly on ChatGPT's own web billing — never route through Amaze, and avoid the Apple App Store unless meaningfully cheaper, since the MCC will then read as Apple rather than OpenAI. Final order: Citi Rewards → HSBC Revolution (if Citi full) → Amex/Mari (once both 4-mpd caps are exhausted)."
+  },
+  {
+    cat: "Anthropic (Claude) subscription",
+    primary: "HSBC Revolution",
+    backup: "Citi Rewards (if cap remains)",
+    ret: "4 mpd",
+    type: "miles",
+    tags: ["claude", "anthropic", "ai subscription", "subscriptions", "subscription"],
+    rule: "Pay directly on Claude's own web billing — never route through Amaze, and avoid the Apple App Store unless meaningfully cheaper, since the MCC will then read as Apple rather than Anthropic. Default to HSBC Revolution for Anthropic payments."
   },
   {
     cat: "%Arabica (tap / Google Pay in-store)",
