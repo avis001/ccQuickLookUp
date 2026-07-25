@@ -458,6 +458,15 @@ const data = [
     rule: "Book online directly through Shaw/GV for the best rate. Counter or kiosk purchases don't qualify for Citi's online bonus, so fall to PremierMiles or Mari there."
   },
   {
+    cat: "Tourist attractions & exhibits (MCC 7991)",
+    primary: "Citi Rewards",
+    backup: "Citi PremierMiles",
+    ret: "4 mpd",
+    type: "miles",
+    tags: ["tourist attraction", "attractions", "attraction", "exhibit", "exhibits", "mcc 7991", "museum", "zoo", "aquarium", "theme park", "universal studios", "sea aquarium", "gardens by the bay"],
+    rule: "Attractions, museums, zoos, aquariums and similar exhibits code as MCC 7991, which qualifies for Citi Rewards' 4 mpd online-spend bonus. Book directly on the attraction's own site/app with Citi Rewards while the S$1,000 monthly cap has room; fall back to Citi PremierMiles once it's full."
+  },
+  {
     cat: "ChatGPT (OpenAI) subscription",
     primary: "Citi Rewards",
     backup: "HSBC Revolution",
@@ -537,6 +546,7 @@ const chipFilters = [
   { label: "Transit", key: "transit" },
   { label: "Bills", key: "bills" },
   { label: "Movies", key: "movies" },
+  { label: "Attractions", key: "attractions" },
   { label: "Travel", key: "travel" },
   { label: "Overseas / FCY", key: "fcy" }
 ];
@@ -549,6 +559,7 @@ const chipMap = {
   transit: ["bus", "mrt", "transit", "public transport"],
   bills: ["utilities", "phone", "broadband", "bills", "subscriptions", "chatgpt", "claude", "openai", "anthropic", "ai subscription"],
   movies: ["movie", "movies", "cinema", "tickets", "shaw", "gv", "golden village"],
+  attractions: ["tourist attraction", "attractions", "attraction", "exhibit", "exhibits", "mcc 7991", "museum", "zoo", "aquarium", "theme park", "universal studios", "sea aquarium", "gardens by the bay"],
   travel: ["airline", "flight", "flights", "hotel", "rental car", "airasia"],
   fcy: ["overseas", "foreign currency", "fcy"]
 };
