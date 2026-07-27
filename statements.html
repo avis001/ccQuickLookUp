@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Statement Coverage — Quick Lookup</title>
+<style>
+  :root {
+    --ink: #0f1b2d;
+    --ink-soft: #3a4a63;
+    --paper: #eef1f6;
+    --card-bg: #ffffff;
+    --accent: #1f6f5c;
+    --accent-soft: #d9ece6;
+    --gold: #b8862b;
+    --gold-soft: #f3e8d2;
+    --red: #b23b3b;
+    --red-soft: #f6dede;
+    --line: #d7dde6;
+    --radius: 14px;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 28px 18px 60px;
+  }
+
+  header { margin-bottom: 20px; }
+
+  .eyebrow {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  h1 { font-size: 28px; margin: 0 0 4px; letter-spacing: -0.01em; }
+
+  .sub {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: var(--ink-soft);
+    font-size: 14px;
+    margin: 0;
+  }
+
+  .nav-link {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 13px;
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .nav-link:hover { text-decoration: underline; }
+
+  .add-source {
+    display: flex;
+    gap: 8px;
+    margin: 20px 0;
+  }
+
+  .add-source input {
+    flex: 1;
+    padding: 12px 14px;
+    font-size: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    border: 1.5px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--card-bg);
+    color: var(--ink);
+    outline: none;
+  }
+
+  .add-source input:focus { border-color: var(--accent); }
+
+  .add-source button {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 12px 18px;
+    border-radius: var(--radius);
+    border: none;
+    background: var(--ink);
+    color: white;
+    cursor: pointer;
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-bottom: 16px;
+  }
+
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+
+  .swatch {
+    width: 12px;
+    height: 12px;
+    border-radius: 4px;
+    display: inline-block;
+  }
+
+  .swatch.recorded { background: var(--accent); }
+  .swatch.missing { background: var(--red); }
+  .swatch.unavailable { background: var(--gold); }
+
+  .table-scroll {
+    overflow-x: auto;
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+  }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 640px;
+  }
+
+  th, td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+
+  th {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 12px;
+    color: var(--ink-soft);
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .source-cell {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 13.5px;
+    font-weight: 600;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .remove-btn {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 14px;
+    color: var(--ink-soft);
+    background: none;
+    border: none;
+    cursor: pointer;
+    line-height: 1;
+    padding: 2px 4px;
+  }
+
+  .remove-btn:hover { color: var(--red); }
+
+  .cell { min-width: 110px; }
+
+  .status-btn {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 10px;
+    border-radius: 100px;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    text-align: center;
+  }
+
+  .status-btn.recorded { background: var(--accent-soft); color: var(--accent); }
+  .status-btn.missing { background: var(--red-soft); color: var(--red); }
+  .status-btn.unavailable { background: var(--gold-soft); color: var(--gold); }
+
+  .note-input {
+    width: 100%;
+    margin-top: 6px;
+    padding: 5px 7px;
+    font-size: 11.5px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--ink-soft);
+    outline: none;
+  }
+
+  .note-input:focus { border-color: var(--accent); }
+
+  .empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--ink-soft);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 14px;
+  }
+
+  .storage-note {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-top: 18px;
+  }
+
+  @media (max-width: 420px) {
+    h1 { font-size: 24px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Siva's Wallet · Statement Coverage</div>
+    <h1>What's recorded, what's missing</h1>
+    <p class="sub">Trailing 6 months per source. Click a status to cycle it, add a note if you like. <a class="nav-link" href="index.html">← Card lookup</a></p>
+  </header>
+
+  <div class="add-source">
+    <input type="text" id="newSource" placeholder="Add a source, e.g. Citi Rewards" autocomplete="off">
+    <button id="addSourceBtn">Add</button>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><span class="swatch recorded"></span> Recorded</div>
+    <div class="legend-item"><span class="swatch missing"></span> Missing</div>
+    <div class="legend-item"><span class="swatch unavailable"></span> Marked unavailable</div>
+  </div>
+
+  <div class="table-scroll" id="tableScroll"></div>
+
+  <p class="storage-note">Stored locally in this browser for now. The data shape is kept storage-agnostic so this can move to a hosted DB later without a rewrite.</p>
+</div>
+
+<script>
+// Storage layer: localStorage today, swappable for a hosted backend later.
+// Keep the rest of the app talking to Store.load()/save() only, both async,
+// so a future Supabase/Firestore implementation is a drop-in replacement.
+const Store = {
+  key: "statementCoverage.v1",
+  async load() {
+    const raw = localStorage.getItem(this.key);
+    return raw ? JSON.parse(raw) : { sources: [] };
+  },
+  async save(data) {
+    localStorage.setItem(this.key, JSON.stringify(data));
+  }
+};
+
+const DEFAULT_SOURCES = [
+  "Citi Rewards",
+  "HSBC Revolution",
+  "Mari Credit Card",
+  "Amex True Cashback",
+  "Trust Credit Card",
+  "Citi PremierMiles"
+];
+
+const STATUS_CYCLE = ["missing", "recorded", "unavailable"];
+const STATUS_LABEL = { missing: "Missing", recorded: "Recorded", unavailable: "Unavailable" };
+
+function trailingMonths(n) {
+  const now = new Date();
+  const months = [];
+  for (let i = n - 1; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    months.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`);
+  }
+  return months;
+}
+
+function monthLabel(key) {
+  const [y, m] = key.split("-").map(Number);
+  const d = new Date(y, m - 1, 1);
+  return d.toLocaleDateString("en-SG", { month: "short", year: "2-digit" });
+}
+
+function emptySource(name) {
+  const months = {};
+  trailingMonths(6).forEach(m => { months[m] = { status: "missing", note: "" }; });
+  return { name, months };
+}
+
+function ensureWindow(data) {
+  trailingMonths(6).forEach(m => {
+    data.sources.forEach(s => {
+      if (!s.months[m]) s.months[m] = { status: "missing", note: "" };
+    });
+  });
+}
+
+function allMonthColumns(data) {
+  const set = new Set(trailingMonths(6));
+  data.sources.forEach(s => Object.keys(s.months).forEach(m => set.add(m)));
+  return Array.from(set).sort();
+}
+
+let state = { sources: [] };
+
+async function init() {
+  state = await Store.load();
+  if (state.sources.length === 0) {
+    state.sources = DEFAULT_SOURCES.map(emptySource);
+    await Store.save(state);
+  } else {
+    ensureWindow(state);
+    await Store.save(state);
+  }
+  render();
+}
+
+function render() {
+  const tableScroll = document.getElementById("tableScroll");
+
+  if (state.sources.length === 0) {
+    tableScroll.innerHTML = '<div class="empty">No sources yet. Add one above.</div>';
+    return;
+  }
+
+  const months = allMonthColumns(state);
+
+  tableScroll.innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th>Source</th>
+          ${months.map(m => `<th>${monthLabel(m)}</th>`).join("")}
+        </tr>
+      </thead>
+      <tbody>
+        ${state.sources.map((s, si) => `
+          <tr>
+            <td>
+              <div class="source-cell">
+                <span>${s.name}</span>
+                <button class="remove-btn" data-remove="${si}" title="Remove source">×</button>
+              </div>
+            </td>
+            ${months.map(m => {
+              const entry = s.months[m] || { status: "missing", note: "" };
+              return `
+                <td class="cell">
+                  <button class="status-btn ${entry.status}" data-source="${si}" data-month="${m}">${STATUS_LABEL[entry.status]}</button>
+                  <input class="note-input" placeholder="note" value="${entry.note.replace(/"/g, "&quot;")}" data-note-source="${si}" data-note-month="${m}">
+                </td>
+              `;
+            }).join("")}
+          </tr>
+        `).join("")}
+      </tbody>
+    </table>
+  `;
+
+  tableScroll.querySelectorAll(".status-btn").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const si = Number(btn.dataset.source);
+      const m = btn.dataset.month;
+      const entry = state.sources[si].months[m];
+      const idx = STATUS_CYCLE.indexOf(entry.status);
+      entry.status = STATUS_CYCLE[(idx + 1) % STATUS_CYCLE.length];
+      await Store.save(state);
+      render();
+    });
+  });
+
+  tableScroll.querySelectorAll(".note-input").forEach(input => {
+    input.addEventListener("change", async () => {
+      const si = Number(input.dataset.noteSource);
+      const m = input.dataset.noteMonth;
+      state.sources[si].months[m].note = input.value;
+      await Store.save(state);
+    });
+  });
+
+  tableScroll.querySelectorAll("[data-remove]").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const si = Number(btn.dataset.remove);
+      state.sources.splice(si, 1);
+      await Store.save(state);
+      render();
+    });
+  });
+}
+
+document.getElementById("addSourceBtn").addEventListener("click", async () => {
+  const input = document.getElementById("newSource");
+  const name = input.value.trim();
+  if (!name) return;
+  if (state.sources.some(s => s.name.toLowerCase() === name.toLowerCase())) {
+    input.value = "";
+    return;
+  }
+  state.sources.push(emptySource(name));
+  await Store.save(state);
+  input.value = "";
+  render();
+});
+
+document.getElementById("newSource").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") document.getElementById("addSourceBtn").click();
+});
+
+init();
+</script>
+</body>
+</html>
